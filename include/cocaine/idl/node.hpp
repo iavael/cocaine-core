@@ -25,6 +25,8 @@
 
 #include "cocaine/rpc/protocol.hpp"
 
+#include "cocaine/traits.hpp"
+
 namespace cocaine { namespace io {
 
 struct app_tag;
@@ -37,8 +39,8 @@ struct enqueue {
     typedef app_tag tag;
 
     typedef stream_of<
-     /* Allow clients to stream data into the apps. */
-        std::string
+     /* Allow clients to stream data into the apps in chunks. */
+        msgpack::object
     >::tag dispatch_type;
 
     static const char* alias() {
@@ -54,8 +56,8 @@ struct enqueue {
     > argument_type;
 
     typedef stream_of<
-     /* Some other arbitrary sequence of bytes, streamed back to the client in chunks. */
-        std::string
+     /* Allow apps to stream data back to the client in chunks. */
+        msgpack::object
     >::tag upstream_type;
 };
 

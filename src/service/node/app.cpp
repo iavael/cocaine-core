@@ -81,8 +81,9 @@ public:
 
 private:
     void
-    write(const std::string& chunk) {
-        downstream->write(chunk.data(), chunk.size());
+    write(const msgpack::object& chunk) {
+        // TODO: Properly forward the msgpack object.
+        downstream->write(chunk.via.raw.ptr, chunk.via.raw.size);
     }
 
     void
@@ -139,7 +140,14 @@ private:
         virtual
         void
         write(const char* chunk, size_t size) {
-            upstream.send<protocol::chunk>(literal_t { chunk, size });
+            msgpack::object object;
+
+            object.type         = msgpack::type::RAW;
+            object.via.raw.ptr  = chunk;
+            object.via.raw.size = size;
+
+            // TODO: Properly forward the msgpack object.
+            upstream.send<protocol::chunk>(object);
         }
 
         virtual
