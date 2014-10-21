@@ -1,0 +1,14 @@
+{
+    "root": [
+        {
+            "formatter": {
+                "type": "string",
+                "pattern": "[%(timestamp)s]: %(message)s (%(...L)s)"
+            },
+            "sink": {
+                "type": "stream",
+                "output": "stdout"
+            }
+        }
+    ]
+}
