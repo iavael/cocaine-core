@@ -1,12 +1,3 @@
-[submodule "foreign/backward-cpp"]
-	path = foreign/backward-cpp
-	url = git://github.com/bombela/backward-cpp.git
-[submodule "foreign/rapidjson"]
-	path = foreign/rapidjson
-	url = git://github.com/andrusha97/rapidjson.git
-[submodule "foreign/blackhole"]
-	path = foreign/blackhole
-	url = git://github.com/3Hren/blackhole.git
 [submodule "tests/foreign/celero"]
 	path = tests/foreign/celero
 	url = https://github.com/DigitalInBlue/Celero
