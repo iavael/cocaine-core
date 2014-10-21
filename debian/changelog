@@ -1,0 +1,153 @@
+blackhole (0.2.3-1) unstable; urgency=low
+
+  * Misc: fixed debianization for precise, which allows to install package with
+    libboost 1.46 as like as 1.48.
+
+ -- Evgeny Safronov <division494@gmail.com>  Mon, 29 Sep 2014 10:56:48 +0400
+
+blackhole (0.2.2-1) unstable; urgency=low
+
+  * Feature: added file sink which can automatically reopen files after they
+    are moved.
+
+ -- Evgeny Safronov <division494@gmail.com>  Wed, 24 Sep 2014 15:00:21 +0400
+
+blackhole (0.2.1-1) unstable; urgency=low
+
+  * Bug fix: verbose logger should now properly copy level value when moving.
+
+ -- Evgeny Safronov <division494@gmail.com>  Fri, 12 Sep 2014 14:09:19 +0400
+
+blackhole (0.2.0-2) unstable; urgency=low
+
+  * Bug fix: fixed dependencies in both debian/control and spec.
+
+ -- Evgeny Safronov <division494@gmail.com>  Tue, 26 Aug 2014 22:46:59 +0400
+
+blackhole (0.2.0-1) unstable; urgency=low
+
+  * Release version.
+  * Bug fix: replaced accidentally left writer lock by the reader one.
+  * Bug fix: logger object now get locked while swapping.
+
+ -- Evgeny Safronov <division494@gmail.com>  Mon, 18 Aug 2014 15:27:44 +0400
+
+blackhole (0.2.0-0rc10) unstable; urgency=low
+
+  * Compatibility: fixed compatibility with GCC 4.4.
+
+ -- Evgeny Safronov <division494@gmail.com>  Fri, 08 Aug 2014 13:41:04 +0400
+
+blackhole (0.2.0-0rc9) unstable; urgency=low
+
+  * Bug fix: fixed mapping of debug severity to string.
+  * Other: change priority of attribute sets while merging.
+  * Other: scoped attributes constructor now has more strictly wrapper concept check.
+  * Other: added DECLARE_LOCAL_KEYWORD macro.
+  * Testing: added datetime generator, string formatter and other benchmarks.
+  * Testing: added tests to check priority of categorized attribute sets.
+
+ -- Evgeny Safronov <division494@gmail.com>  Fri, 08 Aug 2014 12:54:21 +0400
+
+blackhole (0.2.0-0rc8) unstable; urgency=low
+
+  * Other: default mapping from default severity to syslog one.
+  * Other: default warning severity mapping to string has been slightly changed.
+
+ -- Evgeny Safronov <division494@gmail.com>  Wed, 06 Aug 2014 16:09:20 +0400
+
+blackhole (0.2.0-0rc7) unstable; urgency=low
+
+  * Feature: logger wrapper now provides underlying logger type.
+  * Bug fix: forgotten configuration include added.
+  * Other: logger wrapper's constructor overload now accepts other const
+    wrapper's reference instead of non-const one.
+  * Other: changed namespace of DECLARE_EVENT_KEYWORD.
+  * Other: using new benchmarking framework for regression tests.
+  * Testing: more tests for wrapper.
+
+ -- Evgeny Safronov <division494@gmail.com>  Wed, 06 Aug 2014 14:53:16 +0400
+
+blackhole (0.2.0-0rc6) unstable; urgency=low
+
+  * Bug fix: fixed linker error.
+
+ -- Evgeny Safronov <division494@gmail.com>  Mon, 04 Aug 2014 17:51:00 +0400
+
+blackhole (0.2.0-0rc5) unstable; urgency=low
+
+  * Bug fix: fixed deadlock while invoking move assigning in logger wrapper.
+
+ -- Evgeny Safronov <division494@gmail.com>  Mon, 04 Aug 2014 12:19:00 +0400
+
+blackhole (0.2.0-0rc4) unstable; urgency=low
+
+  * Feature: added default severity and its mapping function.
+
+ -- Evgeny Safronov <division494@gmail.com>  Mon, 04 Aug 2014 12:11:32 +0400
+
+blackhole (0.2.0-0rc3) unstable; urgency=low
+
+  * Feature: logger object's internal state is now thread-safe.
+  * Other: moving `BLACKHOLE_HEADER_ONLY` declaration to the config file.
+  * Other: disable tests and examples by default.
+
+ -- Evgeny Safronov <division494@gmail.com>  Sun, 03 Aug 2014 18:07:01 +0400
+
+blackhole (0.2.0-0rc2) unstable; urgency=low
+
+  * Feature: logger frontends are now thread-aware.
+  * Feature: streaming sink now allows to use custom `std::ostream`.
+  * Bug fix: tcp write handler will now block until the message is completely sent.
+  * Other: disable trace collecting by default.
+  * Other: use lightweight process id (LWP) on Linux instead of thread id.
+  * Other: logger can now provide its tracking state outside.
+  * Testing: open access to `backend` variables for mocking purpose.
+
+ -- Evgeny Safronov <division494@gmail.com>  Fri, 01 Aug 2014 18:09:23 +0400
+
+blackhole (0.2.0-0rc1) unstable; urgency=low
+
+  * Feature: Elasticsearch sink - allows to send logging events directly to that storage.
+  * Feature: scoped attributes holder - automatically adds specified attributes to the logger while in its scope.
+  * Feature: logger adaptor - keeps some attributes until lives.
+  * Feature: tracing framework - closely integrates with the logging system.
+  * Feature: configuration parser can properly handle arrays.
+  * Bug fix: long and unsigned long values can now be used as attributes.
+  * Bug fix: fixed misleading error message when failed to instantiate formatter.
+  * Bug fix: fixed undefined behaviour in syslog sink.
+  * Bug fix: some conditional memory jumps fixed.
+  * Other: changed license to MIT.
+  * Other: relax local attributes transition to the record.
+  * Other: opening verbose logger's level type.
+  * Other: added macro variable to determine if the platform has c++11 random library.
+  * Other: start using implementation files (ipp), which allows to build library in the future.
+  * Other: verbose logger now can keep bound verbosity level and filter by it.
+  * Other: no longer use `boost::filesystem` deprecated API.
+  * Other: let the compiler deduce `swap` function it needs to use.
+  * Other: migrated from `boost::any` to `boost::variant` configuration.
+  * Other: more forwards added.
+  * Example: added example using Elasticsearch sink.
+  * Testing: testing frameworks are now included as submodules.
+  * Testing: continious integration is used more widely, tests and examples should now be built separately.
+  * Testing: benchmark added to measure full logger event lifecycle.
+
+ -- Evgeny Safronov <division494@gmail.com>  Tue, 29 Jul 2014 13:51:48 +0400
+
+blackhole (0.1.0-3) unstable; urgency=low
+
+  * Bug Fix: added forgotten include.
+
+ -- Evgeny Safronov <division494@gmail.com>  Fri, 25 Apr 2014 14:14:00 +0400
+
+blackhole (0.1.0-2) unstable; urgency=low
+
+  * Debianization has been reviewed.
+
+ -- Evgeny Safronov <division494@gmail.com>  Tue, 08 Apr 2014 14:20:00 +0400
+
+blackhole (0.1.0-1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Evgeny Safronov <division494@gmail.com>  Mon, 31 Mar 2014 15:20:30 +0400
