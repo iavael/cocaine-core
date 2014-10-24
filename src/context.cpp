@@ -635,9 +635,12 @@ context_t::remove(const std::string& name) {
 boost::optional<const actor_t&>
 context_t::locate(const std::string& name) const {
     auto ptr = m_services.synchronize();
-    auto it = std::find_if(ptr->begin(), ptr->end(), match{name});
+    auto it  = std::find_if(ptr->begin(), ptr->end(), match{name});
 
-    return boost::optional<const actor_t&>(it != ptr->end(), *it->second);
+    return boost::optional<const actor_t&>(
+        it != ptr->end() && it->second->is_active(),
+       *it->second
+    );
 }
 
 namespace {
