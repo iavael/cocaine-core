@@ -80,7 +80,7 @@ public:
     {
         typedef io::protocol<event_traits<locator::connect>::upstream_type>::scope protocol;
 
-        on<protocol::chunk>(std::bind(&remote_client_t::on_announce, this, std::placeholders::_1));
+        on<protocol::chunk>(std::bind(&remote_client_t::on_announce, this, std::placeholders::_1, std::placeholders::_2));
         on<protocol::choke>(std::bind(&remote_client_t::on_shutdown, this));
     }
 
@@ -100,7 +100,7 @@ public:
 
 private:
     void
-    on_announce(const results::connect& update);
+    on_announce(const std::string& uuid, const std::map<std::string, results::resolve>& update);
 
     void
     on_shutdown();
@@ -146,12 +146,7 @@ locator_t::remote_client_t::discard(const boost::system::error_code& ec) const {
 }
 
 void
-locator_t::remote_client_t::on_announce(const results::connect& update_) {
-    std::string uuid_;
-    std::map<std::string, results::resolve> update;
-
-    std::tie(uuid_, update) = update_;
-
+locator_t::remote_client_t::on_announce(const std::string& uuid_, const std::map<std::string, results::resolve>& update) {
     std::ostringstream stream;
     std::ostream_iterator<char> builder(stream);
 
@@ -183,7 +178,7 @@ locator_t::remote_client_t::on_announce(const results::connect& update_) {
     std::lock_guard<std::mutex> guard(parent->m_mutex);
 
     for(auto it = parent->m_streams.begin(); it != parent->m_streams.end(); ++it) {
-        it->second.write(update_);
+        it->second.write(results::connect{uuid_, update});
     }
 }
 
