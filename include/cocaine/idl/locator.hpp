@@ -77,6 +77,8 @@ struct connect {
     > argument_type;
 
     typedef stream_of<
+     /* Node ID. */
+        std::string,
      /* A full dump of all available services on this node. Used by metalocator to aggregate
         node information from the cluster. */
         std::map<std::string, tuple::fold<protocol<resolve::upstream_type>::sequence_type>::type>
@@ -104,6 +106,7 @@ struct cluster {
     }
 
     typedef option_of<
+     /* A mapping between Node IDs and their endpoints for all known cluster members. */
         std::map<std::string, boost::asio::ip::tcp::endpoint>
     >::tag upstream_type;
 };

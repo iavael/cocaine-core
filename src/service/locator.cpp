@@ -70,7 +70,7 @@ class locator_t::remote_client_t:
     std::string     const uuid;
 
     // Currently announced services.
-    std::set<std::string> active;
+    std::set<std::pair<std::string, std::string>> active;
 
 public:
     remote_client_t(locator_t* parent_, const std::string& uuid_):
@@ -87,7 +87,7 @@ public:
     virtual
    ~remote_client_t() {
         for(auto it = active.begin(); it != active.end(); ++it) {
-            parent->m_gateway->cleanup(uuid, *it);
+            parent->m_gateway->cleanup(it->first, it->second);
         }
     }
 
@@ -146,7 +146,12 @@ locator_t::remote_client_t::discard(const boost::system::error_code& ec) const {
 }
 
 void
-locator_t::remote_client_t::on_announce(const results::connect& update) {
+locator_t::remote_client_t::on_announce(const results::connect& update_) {
+    std::string uuid_;
+    std::map<std::string, results::resolve> update;
+
+    std::tie(uuid_, update) = update_;
+
     std::ostringstream stream;
     std::ostream_iterator<char> builder(stream);
 
@@ -156,7 +161,7 @@ locator_t::remote_client_t::on_announce(const results::connect& update) {
         update | boost::adaptors::map_keys
     );
 
-    COCAINE_LOG_INFO(parent->m_log, "remote node has updated %d service(s): %s", update.size(), stream.str())(
+    COCAINE_LOG_INFO(parent->m_log, "remote node (-> %s) has updated %d service(s): %s", uuid_, update.size(), stream.str())(
         "uuid", uuid
     );
 
@@ -167,18 +172,18 @@ locator_t::remote_client_t::on_announce(const results::connect& update) {
         std::tie(endpoints, std::ignore, std::ignore) = it->second;
 
         if(endpoints.empty()) {
-            parent->m_gateway->cleanup(uuid, it->first);
-            active.erase(it->first);
+            parent->m_gateway->cleanup(uuid_, it->first);
+            active.erase({uuid_, it->first});
         } else {
-            parent->m_gateway->consume(uuid, it->first, it->second);
-            active.insert(it->first);
+            parent->m_gateway->consume(uuid_, it->first, it->second);
+            active.insert({uuid_, it->first});
         }
     }
 
     std::lock_guard<std::mutex> guard(parent->m_mutex);
 
     for(auto it = parent->m_streams.begin(); it != parent->m_streams.end(); ++it) {
-        it->second.write(update);
+        it->second.write(update_);
     }
 }
 
@@ -439,7 +444,7 @@ locator_t::on_connect(const std::string& uuid) -> streamed<results::connect> {
     if(m_snapshot.empty()) {
         return stream;
     } else {
-        return stream.write(m_snapshot);
+        return stream.write(results::connect{m_cfg.uuid, m_snapshot});
     }
 }
 
@@ -505,7 +510,10 @@ locator_t::on_service(const actor_t& actor) {
     };
 
     const auto response = results::connect {
-        { actor.prototype().name(), metadata }
+        m_cfg.uuid, {{
+            actor.prototype().name(),
+            metadata
+        }}
     };
 
     std::lock_guard<std::mutex> guard(m_mutex);
