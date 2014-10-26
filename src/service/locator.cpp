@@ -173,12 +173,12 @@ locator_t::remote_client_t::on_announce(const results::connect& update) {
             parent->m_gateway->consume(uuid, it->first, it->second);
             active.insert(it->first);
         }
+    }
 
-        std::lock_guard<std::mutex> guard(parent->m_mutex);
+    std::lock_guard<std::mutex> guard(parent->m_mutex);
 
-        for(auto it = parent->m_streams.begin(); it != parent->m_streams.end(); ++it) {
-            it->second.write(update);
-        }
+    for(auto it = parent->m_streams.begin(); it != parent->m_streams.end(); ++it) {
+        it->second.write(update);
     }
 }
 
