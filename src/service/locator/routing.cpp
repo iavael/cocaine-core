@@ -45,7 +45,7 @@ continuum_t::continuum_t(std::unique_ptr<logging::log_t> log, const std::map<std
         weight
     );
 
-    char digest[16];
+    unsigned char digest[16];
 
     for(auto it = group.begin(); it != group.end(); ++it) {
         const double slice = it->second / weight;
@@ -93,7 +93,7 @@ continuum_t::continuum_t(std::unique_ptr<logging::log_t> log, const std::map<std
 
 std::string
 continuum_t::get(const std::string& key) const {
-    char digest[16];
+    unsigned char digest[16];
 
     MHASH thread = mhash_init(MHASH_MD5);
     mhash(thread, key.data(), key.size());
