@@ -99,7 +99,11 @@ session_t::pull_action_t::finalize(const boost::system::error_code& ec) {
         return;
     }
 
+#if defined(__clang__)
+    if(const auto ptr = std::atomic_load(&session->transport)) {
+#else
     if(const auto ptr = *session->transport.synchronize()) {
+#endif
         try {
             session->invoke(message);
         } catch(...) {
@@ -179,7 +183,11 @@ session_t::discard_action_t::operator()(const boost::system::error_code& ec) {
 
 session_t::session_t(std::unique_ptr<channel<tcp>> transport_, const dispatch_ptr_t& prototype_):
     transport(std::shared_ptr<channel<tcp>>(std::move(transport_))),
+#if defined(__clang__)
+    endpoint(transport->socket->remote_endpoint()),
+#else
     endpoint((*transport.synchronize())->socket->remote_endpoint()),
+#endif
     prototype(prototype_),
     max_channel_id(0)
 {
@@ -248,7 +256,11 @@ session_t::revoke(uint64_t channel_id) {
 
 void
 session_t::detach() {
+#if defined(__clang__)
+    std::atomic_store(&transport, std::shared_ptr<channel<tcp>>());
+#else
     *transport.synchronize() = nullptr;
+#endif
 
     // Detach all the signal handlers, because the session will be in detached state and triggering
     // more signals will result in an undefined behavior.
@@ -259,7 +271,11 @@ session_t::detach() {
 
 void
 session_t::pull() {
+#if defined(__clang__)
+    if(const auto ptr = std::atomic_load(&transport)) {
+#else
     if(const auto ptr = *transport.synchronize()) {
+#endif
         // Use dispatch() instead of a direct call for thread safety.
         ptr->socket->get_io_service().dispatch(std::bind(&pull_action_t::operator(),
             std::make_shared<pull_action_t>(shared_from_this()),
@@ -272,7 +288,11 @@ session_t::pull() {
 
 void
 session_t::push(encoder_t::message_type&& message) {
+#if defined(__clang__)
+    if(const auto ptr = std::atomic_load(&transport)) {
+#else
     if(const auto ptr = *transport.synchronize()) {
+#endif
         // Use dispatch() instead of a direct call for thread safety.
         ptr->socket->get_io_service().dispatch(std::bind(&push_action_t::operator(),
             std::make_shared<push_action_t>(std::move(message), shared_from_this()),
@@ -300,7 +320,11 @@ session_t::active_channels() const {
 
 size_t
 session_t::memory_pressure() const {
+#if defined(__clang__)
+    if(const auto ptr = std::atomic_load(&transport)) {
+#else
     if(const auto ptr = *transport.synchronize()) {
+#endif
         return ptr->reader->pressure() + ptr->writer->pressure();
     } else {
         return 0;
